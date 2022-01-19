@@ -5,7 +5,7 @@ from service.Cu48b import Cu48b
 
 
 app = Flask(__name__)
-app.url_map.strict_slashes = False
+app.url_map.strict_slashes = False 
 
 api = Api(app)
 
@@ -25,7 +25,7 @@ def cu48b_A():
         return jsonify(result="ok")
 
 
-@app.route('/cu48b/<locker_id>', methods=['GET', 'POST', 'DELETE'])
+@app.route('/cu48b/<locker_id>', methods=['POST'])
 def cu48b_B(locker_id = None):
     if request.method == 'POST':
         cu48b = Cu48b()
@@ -33,8 +33,6 @@ def cu48b_B(locker_id = None):
         return jsonify(result="ok")
 
    
-
-
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, public, max-age=0"
