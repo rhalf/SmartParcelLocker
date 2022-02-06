@@ -1,11 +1,13 @@
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api
+from flask_cors import CORS, cross_origin
 
 from service.Cu48b import Cu48b
 
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False 
+CORS(app)
 
 api = Api(app)
 
@@ -41,4 +43,4 @@ def after_request(response):
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="localhost", port=8000, debug=True)
