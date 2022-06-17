@@ -7,13 +7,13 @@ from service.KerongCommProtocol import KerongCommProtocol
 
 class Cu48b:
 
-    port_name = "COM3"
+    port_name = None
     baudrate = 19200
     lockers = []
     sensors = []
 
     def __init__(self, port_name):
-        this.port_name = port_name
+        self.port_name = port_name
 
     def onResponse(self, lockers, sensors):
         self.lockers = lockers
