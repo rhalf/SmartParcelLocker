@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import this
 from serial.tools.list_ports import comports
 from service.KerongCommProtocol import KerongCommProtocol
 
@@ -10,6 +11,9 @@ class Cu48b:
     baudrate = 19200
     lockers = []
     sensors = []
+
+    def __init__(self, port_name):
+        this.port_name = port_name
 
     def onResponse(self, lockers, sensors):
         self.lockers = lockers
@@ -33,14 +37,6 @@ class Cu48b:
         comm.open()
         comm.send(0, KerongCommProtocol.LOCKER_ALL, KerongCommProtocol.LOCKER_UNLOCK)
         comm.close()
-
-    @staticmethod
-    def getAvailablePorts():
-        ports = []
-        for port, desc, hwid in sorted(comports()):
-            ports.append(port)
-        return ports
-
 
 if __name__ == "__main__":
     cu48b = Cu48b()
