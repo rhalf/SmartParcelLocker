@@ -7,7 +7,7 @@ from service.Cu48b import Cu48b
 import sys
 
 print(sys.argv)
-baudrate = sys.argv[1]
+port = str(sys.argv[1])
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False 
@@ -18,7 +18,7 @@ api = Api(app)
 @app.route('/cu48b', methods=['GET', 'DELETE'])
 def cu48b_A():
     if request.method == 'GET':
-        cu48b = Cu48b(baudrate)
+        cu48b = Cu48b(port)
         cu48b.getStatus()
         return jsonify(
             lockers=cu48b.lockers,
@@ -26,7 +26,7 @@ def cu48b_A():
             result="ok"
         )
     if request.method == 'DELETE':
-        cu48b = Cu48b(baudrate)
+        cu48b = Cu48b(port)
         cu48b.unlockAll()
         return jsonify(result="ok")
 
@@ -34,7 +34,7 @@ def cu48b_A():
 @app.route('/cu48b/<locker_id>', methods=['POST'])
 def cu48b_B(locker_id = None):
     if request.method == 'POST':
-        cu48b = Cu48b(baudrate)
+        cu48b = Cu48b(port)
         cu48b.unlock(0, int(locker_id))
         return jsonify(result="ok")
 
