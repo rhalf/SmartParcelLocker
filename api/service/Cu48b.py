@@ -19,23 +19,23 @@ class Cu48b:
         self.lockers = lockers
         self.sensors = sensors
 
-    def getStatus(self):
+    def getStatus(self, board_id):
         comm = KerongCommProtocol(self.port_name, self.baudrate, self.onResponse)
         comm.open()
-        comm.send(0, KerongCommProtocol.LOCKER_ALL, KerongCommProtocol.GET_STATUS)
+        comm.send(int(board_id), KerongCommProtocol.LOCKER_ALL, KerongCommProtocol.GET_STATUS)
         comm.read()
         comm.close()
 
-    def unlock(self, board_number, lock_number):
+    def unlock(self, board_id, lock_number):
         comm = KerongCommProtocol(self.port_name, self.baudrate, None)
         comm.open()
-        comm.send(board_number, lock_number, KerongCommProtocol.LOCKER_UNLOCK)
+        comm.send(int(board_id), lock_number, KerongCommProtocol.LOCKER_UNLOCK)
         comm.close()
 
-    def unlockAll(self):
+    def unlockAll(self, board_id):
         comm = KerongCommProtocol(self.port_name, self.baudrate, None)
         comm.open()
-        comm.send(0, KerongCommProtocol.LOCKER_ALL, KerongCommProtocol.LOCKER_UNLOCK)
+        comm.send(int(board_id), KerongCommProtocol.LOCKER_ALL, KerongCommProtocol.LOCKER_UNLOCK)
         comm.close()
 
 if __name__ == "__main__":
