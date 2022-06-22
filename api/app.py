@@ -4,7 +4,7 @@ from flask_cors import CORS, cross_origin
 
 from service.Cu48b import Cu48b
 
-import sys
+import sys, subprocess
 
 print(sys.argv)
 port = str(sys.argv[1])
@@ -45,6 +45,21 @@ def cu48b_B(board_id = None,locker_id = None):
             result="ok"
             )
 
+@app.route('/unit/shutdown', methods=['POST'])
+def unit_shutdown():
+    if request.method == 'POST':
+        subprocess.call(["sudo", "shutdown", "now"])
+        return jsonify(
+            result="ok"
+            )
+
+@app.route('/unit/reboot', methods=['POST'])
+def unit_reboot():
+    if request.method == 'POST':
+        subprocess.call(["reboot"])
+        return jsonify(
+            result="ok"
+            )   
    
 @app.after_request
 def after_request(response):
