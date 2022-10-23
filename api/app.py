@@ -39,7 +39,7 @@ def cu48b_A(board_id = None):
 def cu48b_B(board_id = None,locker_id = None):
     if request.method == 'POST':
         cu48b = Cu48b(port)
-        cu48b.unlock(board_id, int(locker_id))
+        cu48b.unlock(board_id, locker_id)
         return jsonify(
             board=board_id,
             result="ok"

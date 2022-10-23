@@ -27,9 +27,10 @@ class Cu48b:
         comm.close()
 
     def unlock(self, board_id, lock_number):
+        print("unlock: ", board_id, lock_number)
         comm = KerongCommProtocol(self.port_name, self.baudrate, None)
         comm.open()
-        comm.send(int(board_id), lock_number, KerongCommProtocol.LOCKER_UNLOCK)
+        comm.send(int(board_id), int(lock_number), KerongCommProtocol.LOCKER_UNLOCK)
         comm.close()
 
     def unlockAll(self, board_id):
