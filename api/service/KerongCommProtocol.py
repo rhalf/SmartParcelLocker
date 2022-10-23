@@ -138,14 +138,15 @@ class KerongCommProtocol:
 
 
 if __name__ == "__main__":
-    cu48b = KerongCommProtocol("COM3", 19200, None)
+    # cu48b = KerongCommProtocol("COM3", 19200, None)
+    cu48b = KerongCommProtocol("/dev/cu.usbserial-A10LG0Y1", 19200, None)
     cu48b.open()
     # unlock-all
-    # cu48b.send(0, Cu48b.LOCKER_ALL, Cu48b.LOCKER_UNLOCK)
+    # cu48b.send(0, KerongCommProtocol.LOCKER_ALL, KerongCommProtocol.LOCKER_UNLOCK)
     # get-status-all
-    cu48b.send(0, KerongCommProtocol.LOCKER_ALL, KerongCommProtocol.GET_STATUS)
+    # cu48b.send(0, KerongCommProtocol.LOCKER_ALL, KerongCommProtocol.GET_STATUS)
     # unlock-specific
-    # cu48b.send(0, 0, Cu48b.LOCKER_UNLOCK)
+    cu48b.send(0, 4, KerongCommProtocol.LOCKER_UNLOCK)
     cu48b.read()
     print("lockers:", cu48b.lockers)
     print("sensors:", cu48b.sensors)

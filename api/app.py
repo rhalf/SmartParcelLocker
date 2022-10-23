@@ -4,7 +4,7 @@ from flask_cors import CORS, cross_origin
 
 from service.Cu48b import Cu48b
 
-import sys
+import sys, subprocess
 
 print(sys.argv)
 port = str(sys.argv[1])
@@ -15,29 +15,51 @@ CORS(app)
 
 api = Api(app)
 
-@app.route('/cu48b', methods=['GET', 'DELETE'])
-def cu48b_A():
+@app.route('/cu48b/<board_id>', methods=['GET', 'DELETE'])
+def cu48b_A(board_id = None):
     if request.method == 'GET':
         cu48b = Cu48b(port)
-        cu48b.getStatus()
+        cu48b.getStatus(board_id)
         return jsonify(
             lockers=cu48b.lockers,
             sensors=cu48b.sensors,
+            board=board_id,
             result="ok"
         )
     if request.method == 'DELETE':
         cu48b = Cu48b(port)
-        cu48b.unlockAll()
-        return jsonify(result="ok")
+        cu48b.unlockAll(board_id)
+        return jsonify(
+            board=board_id,
+            result="ok"
+        )
 
 
-@app.route('/cu48b/<locker_id>', methods=['POST'])
-def cu48b_B(locker_id = None):
+@app.route('/cu48b/<board_id>/<locker_id>', methods=['POST'])
+def cu48b_B(board_id = None,locker_id = None):
     if request.method == 'POST':
         cu48b = Cu48b(port)
-        cu48b.unlock(0, int(locker_id))
-        return jsonify(result="ok")
+        cu48b.unlock(board_id, locker_id)
+        return jsonify(
+            board=board_id,
+            result="ok"
+            )
 
+@app.route('/unit/shutdown', methods=['POST'])
+def unit_shutdown():
+    if request.method == 'POST':
+        subprocess.call(["sudo", "shutdown", "now"])
+        return jsonify(
+            result="ok"
+            )
+
+@app.route('/unit/reboot', methods=['POST'])
+def unit_reboot():
+    if request.method == 'POST':
+        subprocess.call(["reboot"])
+        return jsonify(
+            result="ok"
+            )   
    
 @app.after_request
 def after_request(response):
