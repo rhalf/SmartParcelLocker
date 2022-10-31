@@ -48,83 +48,98 @@ class KerongCommProtocol:
             self.close()
 
     def read(self):
-        if (self.serial_port is not None) and self.serial_port.isOpen():
-            dataIn = self.serial_port.read(self.bytesToRead)
-            self.data_in = list(dataIn)
-            if len(self.data_in) > 0:
-                self.parse()
-            if self.on_data_received == callable:
-                self.on_data_received(self.lockers, self.sensors)
-
+        try:
+            if (self.serial_port is not None) and self.serial_port.isOpen():
+                dataIn = self.serial_port.read(self.bytesToRead)
+                self.data_in = list(dataIn)
+                if len(self.data_in) > 0:
+                    self.parse()
+                if self.on_data_received == callable:
+                    self.on_data_received(self.lockers, self.sensors)
+        except Exception as e:
+                print(e)
+                self.close()
+                    
     def send(self, address, locker_number, data_out):
-        self.data_out = [
-            0x02,
-            address,
-            locker_number,
-            data_out,
-            0x03,
-            0x00
-        ]
-        self.data_out[5] = KerongCommProtocol.checkSum(self.data_out)
+        try:
+            self.data_out = [
+                0x02,
+                address,
+                locker_number,
+                data_out,
+                0x03,
+                0x00
+            ]
+            self.data_out[5] = KerongCommProtocol.checkSum(self.data_out)
 
-        if self.serial_port.isOpen():
-            self.serial_port.write(bytes(self.data_out))
+            if self.serial_port:
+                if self.serial_port.isOpen():
+                    self.serial_port.write(bytes(self.data_out))
+        except Exception as e:
+            print(e)
+            self.close()
 
     def parse(self):
-        if self.data_in is None:
-            raise Exception("Data is null")
-        if len(self.data_in) < self.bytesToRead:
-            raise Exception("Data is short")
+        try:
+            if self.data_in is None:
+                raise Exception("Data is null")
+            if len(self.data_in) < self.bytesToRead:
+                raise Exception("Data is short")
 
-        cloned = self.data_in.copy()
-        prevCheckSum = cloned[17]
-        cloned[17] = 0x00
+            cloned = self.data_in.copy()
+            prevCheckSum = cloned[17]
+            cloned[17] = 0x00
 
-        currentCheckSum = KerongCommProtocol.checkSum(cloned)
-        if not (prevCheckSum == currentCheckSum):
-            raise Exception("CheckSum is wrong")
+            currentCheckSum = KerongCommProtocol.checkSum(cloned)
+            if not (prevCheckSum == currentCheckSum):
+                raise Exception("CheckSum is wrong")
 
-        if not (self.data_in[3] == 0x75):
-            raise Exception("Wrong command")
+            if not (self.data_in[3] == 0x75):
+                raise Exception("Wrong command")
 
-        self.lockers = []
-        self.sensors = []
+            self.lockers = []
+            self.sensors = []
 
-        for index in range(4,10):
-            for digit in range(8): 
-                bit = (int(self.data_in[index]) >> digit) & 0x01
-                self.lockers.append(bit)
+            for index in range(4,10):
+                for digit in range(8): 
+                    bit = (int(self.data_in[index]) >> digit) & 0x01
+                    self.lockers.append(bit)
 
-        for index in range(10,16):
-            for digit in range(8):
-                bit = (int(self.data_in[index]) >> digit) & 0x01
-                self.sensors.append(bit)
-       
+            for index in range(10,16):
+                for digit in range(8):
+                    bit = (int(self.data_in[index]) >> digit) & 0x01
+                    self.sensors.append(bit)
+        
 
-        # self.lockers = [
-        #     self.data_in[4],
-        #     self.data_in[5],
-        #     self.data_in[6],
-        #     self.data_in[7],
-        #     self.data_in[8],
-        #     self.data_in[9],
-        # ]
+            # self.lockers = [
+            #     self.data_in[4],
+            #     self.data_in[5],
+            #     self.data_in[6],
+            #     self.data_in[7],
+            #     self.data_in[8],
+            #     self.data_in[9],
+            # ]
 
-        # self.sensors = [
-        #     self.data_in[10],
-        #     self.data_in[11],
-        #     self.data_in[12],
-        #     self.data_in[13],
-        #     self.data_in[14],
-        #     self.data_in[15],
-        # ]
+            # self.sensors = [
+            #     self.data_in[10],
+            #     self.data_in[11],
+            #     self.data_in[12],
+            #     self.data_in[13],
+            #     self.data_in[14],
+            #     self.data_in[15],
+            # ]
 
-        if self.on_data_received is not None:
-            self.on_data_received(self.lockers, self.sensors)
+            if self.on_data_received is not None:
+                self.on_data_received(self.lockers, self.sensors)
+        
+        except Exception as e:
+            print(e)
+            self.close()
 
     def close(self):
-        if self.serial_port.isOpen():
-            self.serial_port.close()
+        if self.serial_port:
+            if self.serial_port.isOpen():
+                self.serial_port.close()
 
     @staticmethod
     def checkSum(datas):
