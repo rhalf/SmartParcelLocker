@@ -1,6 +1,7 @@
 pip install flask
 pip install flask_restful
 pip install -U flask-cors
+pip install pyserial
 
 sudo usermod -a -G dialout dala
 
